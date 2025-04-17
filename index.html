@@ -677,16 +677,19 @@
                         summaryElement.classList.toggle('expanded');
                         button.classList.toggle('expanded');
                         
-                        // Update scroll indicator after content expands/collapses
-                        setTimeout(updateScrollIndicator, 300);
+                        // 使用 requestAnimationFrame 来确保在 DOM 更新后更新滚动指示器
+                        requestAnimationFrame(() => {
+                            initScrollFunctionality();
+                        });
                     });
                 });
                 
-                // Update paper counter with total papers
-                updatePaperCounter(0, papers.length);
-                
-                // Initialize scroll detection for paper counter
-                initPaperScrollTracking();
+                // 使用 requestAnimationFrame 来确保在 DOM 完全更新后初始化滚动功能
+                requestAnimationFrame(() => {
+                    initScrollFunctionality();
+                    applyFilters();
+                });
+
             } catch (error) {
                 console.error('Error loading papers:', error);
             }
@@ -891,6 +894,81 @@
             const newLang = currentLang === 'zh-CN' ? 'en' : 'zh-CN';
             updateLanguage(newLang);
         });
+
+        // 删除 initPaperScrollTracking 函数，统一使用 initScrollFunctionality
+        function initScrollFunctionality() {
+            // 清除现有的滚动监听器
+            window.onscroll = null;
+            
+            const scrollThumb = document.querySelector('.scroll-thumb');
+            const paperCounter = document.querySelector('.paper-counter');
+            const scrollTrack = document.querySelector('.scroll-track');
+            
+            if (!scrollThumb || !paperCounter || !scrollTrack) return;
+            
+            // 重置滚动指示器的状态
+            scrollThumb.style.top = '0';
+            scrollThumb.style.display = 'block';
+            paperCounter.style.top = '0';
+            paperCounter.style.display = 'block';
+            
+            const visiblePapers = Array.from(document.querySelectorAll('.card-hover'))
+                .filter(paper => paper.style.display !== 'none');
+            
+            if (visiblePapers.length === 0) {
+                paperCounter.textContent = '0/0';
+                scrollThumb.style.display = 'none';
+                paperCounter.style.display = 'none';
+                return;
+            }
+            
+            // 设置初始计数器文本
+            paperCounter.textContent = `1/${visiblePapers.length}`;
+            
+            // 绑定新的滚动事件处理器
+            window.onscroll = function() {
+                requestAnimationFrame(() => {
+                    const windowHeight = window.innerHeight;
+                    const scrollPosition = window.scrollY + (windowHeight / 2);
+                    
+                    let currentPaperIndex = 0;
+                    let closestDistance = Infinity;
+                    
+                    visiblePapers.forEach((paper, index) => {
+                        const rect = paper.getBoundingClientRect();
+                        const paperMiddle = window.scrollY + rect.top + (rect.height / 2);
+                        const distance = Math.abs(paperMiddle - scrollPosition);
+                        
+                        if (distance < closestDistance) {
+                            closestDistance = distance;
+                            currentPaperIndex = index;
+                        }
+                    });
+                    
+                    const trackHeight = scrollTrack.clientHeight;
+                    const thumbHeight = scrollThumb.clientHeight;
+                    
+                    // 计算进度
+                    const progress = visiblePapers.length > 1 ? 
+                        currentPaperIndex / (visiblePapers.length - 1) : 0;
+                    
+                    // 更新滑块位置
+                    const maxTop = trackHeight - thumbHeight;
+                    const newTop = Math.min(Math.max(0, progress * maxTop), maxTop);
+                    scrollThumb.style.top = `${newTop}px`;
+                    
+                    // 更新计数器位置和文本
+                    const counterHeight = paperCounter.clientHeight;
+                    const counterTop = newTop + (thumbHeight/2) - (counterHeight/2);
+                    const adjustedCounterTop = Math.min(Math.max(0, counterTop), trackHeight - counterHeight);
+                    paperCounter.style.top = `${adjustedCounterTop}px`;
+                    paperCounter.textContent = `${currentPaperIndex + 1}/${visiblePapers.length}`;
+                });
+            };
+            
+            // 触发一次滚动事件来设置初始位置
+            window.dispatchEvent(new Event('scroll'));
+        }
     </script>
 </body>
 </html>
