@@ -29,7 +29,8 @@
                 authors: '作者',
                 matchingKeywords: '匹配关键词',
                 categories: '分类',
-                comments: '评论'
+                comments: '评论',
+                details: '详情'
             },
             'en': {
                 title: 'Daily arXiv Paper Digest',
@@ -49,7 +50,8 @@
                 authors: 'Authors',
                 matchingKeywords: 'Matching Keywords',
                 categories: 'Categories',
-                comments: 'Comments'
+                comments: 'Comments',
+                details: 'Details'
             }
         };
 
@@ -106,6 +108,38 @@
 
         .summary-collapse.expanded {
             max-height: 1000px;
+        }
+
+        .meta-collapse {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+
+        .meta-collapse.expanded {
+            max-height: 1000px;
+        }
+
+        .toggle-meta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .toggle-meta:hover {
+            color: #3366ff;
+        }
+
+        .toggle-meta i {
+            transition: transform 0.3s;
+        }
+
+        .toggle-meta.expanded i {
+            transform: rotate(180deg);
         }
 
         .ai-section {
@@ -303,6 +337,31 @@
             border-left: 8px solid #3366ff;
             border-top: 6px solid transparent;
             border-bottom: 6px solid transparent;
+        }
+
+        .toggle-summary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+        }
+
+        .toggle-summary:hover {
+            color: #3366ff;
+            background-color: rgba(51, 102, 255, 0.05);
+        }
+
+        .toggle-summary i {
+            transition: transform 0.3s;
+        }
+
+        .toggle-summary.expanded i {
+            transform: rotate(180deg);
         }
     </style>
 </head>
@@ -509,26 +568,33 @@
                         <div class="flex flex-col gap-4">
                             <div class="flex justify-between items-start">
                                 <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">${paper.title}</h2>
-                                <button class="toggle-summary p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" data-target="${summaryId}">
-                                    <i class="fas fa-chevron-down transition-transform"></i>
+                            </div>
+                            
+                            ${keywordsHtml}
+                            
+                            <div class="flex items-center gap-2">
+                                <button class="toggle-summary" data-target="${summaryId}">
+                                    <i class="fas fa-chevron-down"></i>
+                                    <span>${translations[currentLang].details}</span>
                                 </button>
                             </div>
                             
-                            ${paperIdHtml}
-                            
-                            <div class="flex flex-col">
-                                <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    <i class="fas fa-users mr-1"></i> 
-                                    <span data-i18n="authors">${translations[currentLang].authors}</span>: ${paper.authors.join(', ')}
-                                </p>
-                                
-                                ${keywordsHtml}
-                                ${categoriesHtml}
-                            </div>
-                            
                             <div id="${summaryId}" class="summary-collapse">
-                                <div class="prose dark:prose-invert max-w-none">
-                                    <p class="text-gray-700 dark:text-gray-300">${paper.abstract}</p>
+                                <div class="flex flex-col gap-4">
+                                    ${paperIdHtml}
+                                    
+                                    <div class="flex flex-col">
+                                        <p class="text-sm text-gray-600 dark:text-gray-400">
+                                            <i class="fas fa-users mr-1"></i> 
+                                            <span data-i18n="authors">${translations[currentLang].authors}</span>: ${paper.authors.join(', ')}
+                                        </p>
+                                        
+                                        ${categoriesHtml}
+                                    </div>
+                                    
+                                    <div class="prose dark:prose-invert max-w-none">
+                                        <p class="text-gray-700 dark:text-gray-300">${paper.abstract}</p>
+                                    </div>
                                 </div>
                             </div>
 
@@ -609,7 +675,10 @@
                         const icon = button.querySelector('i');
                         
                         summaryElement.classList.toggle('expanded');
-                        icon.style.transform = summaryElement.classList.contains('expanded') ? 'rotate(180deg)' : '';
+                        button.classList.toggle('expanded');
+                        
+                        // Update scroll indicator after content expands/collapses
+                        setTimeout(updateScrollIndicator, 300);
                     });
                 });
                 
@@ -762,7 +831,6 @@
                 const thumbHeight = scrollThumb.clientHeight;
                 
                 // Calculate progress through the visible papers (0 to 1)
-                // Handle edge case with only 1 visible paper
                 const progress = visiblePapers.length > 1 ? 
                     currentPaperIndex / (visiblePapers.length - 1) : 0;
                 
@@ -772,7 +840,6 @@
                 scrollThumb.style.top = `${newTop}px`;
                 
                 // Update the counter position to be centered next to the thumb
-                // But ensure it stays within the visible area
                 const counterHeight = paperCounter.clientHeight;
                 const counterTop = newTop + (thumbHeight/2) - (counterHeight/2);
                 const adjustedCounterTop = Math.min(Math.max(0, counterTop), trackHeight - counterHeight);
