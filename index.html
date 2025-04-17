@@ -9,6 +9,51 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script>
+        // i18n translations
+        const translations = {
+            'zh-CN': {
+                title: '每日 arXiv 论文速递',
+                selectDate: '选择日期',
+                searchPapers: '搜索论文',
+                searchPlaceholder: '输入标题或摘要关键词...',
+                allKeywords: '全部关键词',
+                abstract: '摘要',
+                pdf: 'PDF',
+                aiAnalysis: 'AI 解读',
+                tldr: 'TLDR',
+                motivation: '研究动机',
+                method: '研究方法',
+                result: '研究结果',
+                conclusion: '研究结论',
+                authors: '作者',
+                matchingKeywords: '匹配关键词',
+                categories: '分类',
+                comments: '评论'
+            },
+            'en': {
+                title: 'Daily arXiv Paper Digest',
+                selectDate: 'Select Date',
+                searchPapers: 'Search Papers',
+                searchPlaceholder: 'Enter title or abstract keywords...',
+                allKeywords: 'All Keywords',
+                abstract: 'Abstract',
+                pdf: 'PDF',
+                aiAnalysis: 'AI Analysis',
+                tldr: 'TLDR',
+                motivation: 'Motivation',
+                method: 'Method',
+                result: 'Result',
+                conclusion: 'Conclusion',
+                authors: 'Authors',
+                matchingKeywords: 'Matching Keywords',
+                categories: 'Categories',
+                comments: 'Comments'
+            }
+        };
+
+        // Current language
+        let currentLang = localStorage.getItem('lang') || navigator.language.startsWith('zh') ? 'zh-CN' : 'en';
+
         tailwind.config = {
             darkMode: 'class',
             theme: {
@@ -63,6 +108,59 @@
 
         .ai-section {
             background: linear-gradient(to right, rgba(91, 145, 255, 0.05), rgba(91, 145, 255, 0.02));
+            border-radius: 0.75rem;
+            border: 1px solid rgba(91, 145, 255, 0.1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            padding: 0.75rem;
+        }
+
+        .ai-section h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: linear-gradient(to right, rgba(91, 145, 255, 0.1), rgba(91, 145, 255, 0.05));
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .ai-section h3 i {
+            color: #3366ff;
+            font-size: 1.25rem;
+        }
+
+        .ai-section h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #3366ff;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .ai-section h4 i {
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .ai-section p {
+            background: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(91, 145, 255, 0.1);
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .ai-section .grid > div {
+            background: rgba(255, 255, 255, 0.5);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgba(91, 145, 255, 0.1);
+        }
+
+        .ai-section .grid {
+            gap: 0.75rem;
         }
         
         .badge {
@@ -90,6 +188,120 @@
             color: #f59e0b;
             font-weight: 600;
         }
+        
+        /* Scroll Indicator */
+        .scroll-indicator-container {
+            position: fixed;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 70%;
+            width: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            z-index: 40;
+            pointer-events: none;
+        }
+        
+        .scroll-track {
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(to bottom, 
+                rgba(209, 213, 219, 0.1) 0%, 
+                rgba(209, 213, 219, 0.3) 50%,
+                rgba(209, 213, 219, 0.1) 100%);
+            border-radius: 4px;
+            position: relative;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .dark .scroll-track {
+            background: linear-gradient(to bottom, 
+                rgba(209, 213, 219, 0.05) 0%, 
+                rgba(209, 213, 219, 0.2) 50%,
+                rgba(209, 213, 219, 0.05) 100%);
+        }
+        
+        .scroll-thumb {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 3rem;
+            background: linear-gradient(135deg, #4d7fff 0%, #3366ff 100%);
+            border-radius: 4px;
+            transition: top 0.2s cubic-bezier(0.33, 1, 0.68, 1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .scroll-thumb::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 6px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+        }
+        
+        .scroll-thumb::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.6);
+            width: 20px;
+            height: 20px;
+            background-color: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+        }
+        
+        .paper-counter {
+            position: absolute;
+            min-width: 3.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            right: 1.75rem;
+            background: linear-gradient(135deg, #4d7fff 0%, #3366ff 100%);
+            color: white;
+            text-align: center;
+            padding: 0.4rem 0.75rem;
+            border-radius: 1rem;
+            pointer-events: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.25s cubic-bezier(0.33, 1, 0.68, 1);
+            opacity: 0.95;
+            transform: translateX(0);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(51, 102, 255, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 6px rgba(51, 102, 255, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(51, 102, 255, 0);
+            }
+        }
+        
+        .paper-counter::before {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left: 8px solid #3366ff;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
@@ -98,14 +310,27 @@
         <header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700">
             <div class="container mx-auto px-4 py-4">
                 <div class="flex justify-between items-center">
-                    <h1 class="text-2xl font-bold text-primary-600 dark:text-primary-400">每日 arXiv 论文速递</h1>
-                    <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                        <i class="fas fa-sun dark:hidden"></i>
-                        <i class="fas fa-moon hidden dark:block"></i>
-                    </button>
+                    <h1 class="text-2xl font-bold text-primary-600 dark:text-primary-400" data-i18n="title">每日 arXiv 论文速递</h1>
+                    <div class="flex items-center gap-4">
+                        <button id="langToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <span class="text-sm font-medium">中/En</span>
+                        </button>
+                        <button id="themeToggle" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-sun dark:hidden"></i>
+                            <i class="fas fa-moon hidden dark:block"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </header>
+
+        <!-- Scroll Indicator -->
+        <div class="scroll-indicator-container">
+            <div class="scroll-track">
+                <div class="scroll-thumb"></div>
+            </div>
+            <div class="paper-counter">1/1</div>
+        </div>
 
         <!-- Main Content -->
         <main class="container mx-auto px-4 py-8">
@@ -114,15 +339,15 @@
                 <div class="space-y-4 mb-8">
                     <div class="flex flex-col sm:flex-row gap-4">
                         <div class="flex-1">
-                            <label for="dateSelect" class="block text-sm font-medium mb-2">选择日期</label>
+                            <label for="dateSelect" class="block text-sm font-medium mb-2" data-i18n="selectDate">选择日期</label>
                             <select id="dateSelect" class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
                             </select>
                         </div>
                         <div class="flex-1">
-                            <label for="searchInput" class="block text-sm font-medium mb-2">搜索论文</label>
+                            <label for="searchInput" class="block text-sm font-medium mb-2" data-i18n="searchPapers">搜索论文</label>
                             <input type="text" id="searchInput" 
                                 class="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                                placeholder="输入标题或摘要关键词...">
+                                data-i18n-placeholder="searchPlaceholder">
                         </div>
                     </div>
                     
@@ -239,6 +464,7 @@
                     paperElement.className = 'card-hover bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-6 animate-fade-in';
                     paperElement.style.animationDelay = `${index * 0.1}s`;
                     paperElement.dataset.keywords = JSON.stringify(paper.matching_keywords || []);
+                    paperElement.dataset.paperIndex = index + 1; // Add paper index for tracking
                     
                     const summaryId = `summary-${index}`;
                     
@@ -247,7 +473,7 @@
                     if (paper.matching_keywords && paper.matching_keywords.length > 0) {
                         keywordsHtml = `
                             <div class="flex flex-wrap gap-2 mt-3">
-                                <span class="text-xs text-gray-600 dark:text-gray-400">匹配关键词:</span>
+                                <span class="text-xs text-gray-600 dark:text-gray-400" data-i18n="matchingKeywords">${translations[currentLang].matchingKeywords}:</span>
                                 ${paper.matching_keywords.map(kw => 
                                     `<span class="badge ${kw.startsWith('@') ? 'badge-highlight' : 'badge-primary'}">${kw}</span>`
                                 ).join('')}
@@ -260,6 +486,7 @@
                     if (paper.categories && paper.categories.length > 0) {
                         categoriesHtml = `
                             <div class="flex flex-wrap gap-2 mt-4">
+                                <span class="text-xs text-gray-600 dark:text-gray-400" data-i18n="categories">${translations[currentLang].categories}:</span>
                                 ${paper.categories.map(cat => 
                                     `<span class="badge badge-secondary">${cat}</span>`
                                 ).join('')}
@@ -289,7 +516,8 @@
                             
                             <div class="flex flex-col">
                                 <p class="text-sm text-gray-600 dark:text-gray-400">
-                                    <i class="fas fa-users mr-1"></i> ${paper.authors.join(', ')}
+                                    <i class="fas fa-users mr-1"></i> 
+                                    <span data-i18n="authors">${translations[currentLang].authors}</span>: ${paper.authors.join(', ')}
                                 </p>
                                 
                                 ${keywordsHtml}
@@ -303,29 +531,45 @@
                             </div>
 
                             ${paper.AI ? `
-                            <div class="ai-section rounded-lg p-4 mt-2">
-                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400 mb-4">
-                                    <i class="fas fa-robot mr-2"></i>AI 解读
+                            <div class="ai-section rounded-lg mt-2">
+                                <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">
+                                    <i class="fas fa-robot"></i>
+                                    <span data-i18n="aiAnalysis">${translations[currentLang].aiAnalysis}</span>
                                 </h3>
-                                <div class="mb-4">
-                                    <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">TLDR</h4>
+                                <div class="mb-3">
+                                    <h4 class="text-sm font-medium">
+                                        <i class="fas fa-bolt"></i>
+                                        <span data-i18n="tldr">${translations[currentLang].tldr}</span>
+                                    </h4>
                                     <p class="text-gray-600 dark:text-gray-400">${paper.AI.tldr}</p>
                                 </div>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2">
                                     <div>
-                                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">研究动机</h4>
+                                        <h4 class="text-sm font-medium">
+                                            <i class="fas fa-lightbulb"></i>
+                                            <span data-i18n="motivation">${translations[currentLang].motivation}</span>
+                                        </h4>
                                         <p class="text-gray-600 dark:text-gray-400">${paper.AI.motivation}</p>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">研究方法</h4>
+                                        <h4 class="text-sm font-medium">
+                                            <i class="fas fa-cogs"></i>
+                                            <span data-i18n="method">${translations[currentLang].method}</span>
+                                        </h4>
                                         <p class="text-gray-600 dark:text-gray-400">${paper.AI.method}</p>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">研究结果</h4>
+                                        <h4 class="text-sm font-medium">
+                                            <i class="fas fa-chart-line"></i>
+                                            <span data-i18n="result">${translations[currentLang].result}</span>
+                                        </h4>
                                         <p class="text-gray-600 dark:text-gray-400">${paper.AI.result}</p>
                                     </div>
                                     <div>
-                                        <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">研究结论</h4>
+                                        <h4 class="text-sm font-medium">
+                                            <i class="fas fa-flag-checkered"></i>
+                                            <span data-i18n="conclusion">${translations[currentLang].conclusion}</span>
+                                        </h4>
                                         <p class="text-gray-600 dark:text-gray-400">${paper.AI.conclusion}</p>
                                     </div>
                                 </div>
@@ -335,15 +579,18 @@
                             <div class="flex flex-wrap gap-3 mt-4">
                                 <a href="${paper.abstract_url}" target="_blank" rel="noopener noreferrer" 
                                     class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
-                                    <i class="fas fa-file-alt mr-2"></i>摘要
+                                    <i class="fas fa-file-alt mr-2"></i>
+                                    <span data-i18n="abstract">${translations[currentLang].abstract}</span>
                                 </a>
                                 <a href="${paper.pdf_url}" target="_blank" rel="noopener noreferrer"
                                     class="inline-flex items-center px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                                    <i class="fas fa-file-pdf mr-2"></i>PDF
+                                    <i class="fas fa-file-pdf mr-2"></i>
+                                    <span>PDF</span>
                                 </a>
                                 ${paper.comments ? `
                                 <div class="inline-flex items-center px-3 py-1 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded border border-gray-200 dark:border-gray-700 text-xs">
-                                    <i class="fas fa-comment-alt mr-2"></i>${paper.comments}
+                                    <i class="fas fa-comment-alt mr-2"></i>
+                                    <span data-i18n="comments">${translations[currentLang].comments}</span>: ${paper.comments}
                                 </div>
                                 ` : ''}
                             </div>
@@ -363,6 +610,12 @@
                         icon.style.transform = summaryElement.classList.contains('expanded') ? 'rotate(180deg)' : '';
                     });
                 });
+                
+                // Update paper counter with total papers
+                updatePaperCounter(0, papers.length);
+                
+                // Initialize scroll detection for paper counter
+                initPaperScrollTracking();
             } catch (error) {
                 console.error('Error loading papers:', error);
             }
@@ -378,7 +631,8 @@
             // Add "All" filter
             const allFilter = document.createElement('button');
             allFilter.className = `badge ${activeCategoryFilters.size === 0 ? 'badge-primary' : 'badge-secondary'} cursor-pointer`;
-            allFilter.textContent = '全部关键词';
+            allFilter.setAttribute('data-i18n', 'allKeywords');
+            allFilter.textContent = translations[currentLang].allKeywords;
             allFilter.addEventListener('click', () => {
                 activeCategoryFilters.clear();
                 updateCategoryFilters();
@@ -412,6 +666,8 @@
         function applyFilters() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             
+            let visiblePapers = 0;
+            
             document.querySelectorAll('.card-hover').forEach(card => {
                 const title = card.querySelector('h2').textContent.toLowerCase();
                 // 修复摘要文本选择器，确保它正确获取摘要文本
@@ -426,8 +682,17 @@
                     keywordMatch = cardKeywords.some(kw => activeCategoryFilters.has(kw));
                 }
                 
-                card.style.display = (textMatch && keywordMatch) ? 'block' : 'none';
+                const isVisible = (textMatch && keywordMatch);
+                card.style.display = isVisible ? 'block' : 'none';
+                
+                // Count visible papers
+                if (isVisible) {
+                    visiblePapers++;
+                }
             });
+            
+            // Update scroll indicator with new visible paper count
+            updateScrollIndicator();
         }
 
         // Search functionality
@@ -441,6 +706,122 @@
 
         // Initialize
         loadAvailableDates();
+        
+        // Scroll indicator functionality
+        function updateScrollIndicator() {
+            const scrollThumb = document.querySelector('.scroll-thumb');
+            const paperCounter = document.querySelector('.paper-counter');
+            const visiblePapers = Array.from(document.querySelectorAll('.card-hover'))
+                .filter(paper => paper.style.display !== 'none');
+            
+            if (visiblePapers.length === 0) {
+                paperCounter.textContent = '0/0';
+                scrollThumb.style.display = 'none';
+                paperCounter.style.display = 'none';
+                return;
+            } else if (visiblePapers.length === 1) {
+                // Special case for single paper
+                paperCounter.textContent = '1/1';
+                paperCounter.style.display = 'block';
+                scrollThumb.style.display = 'block';
+                scrollThumb.style.top = '0';
+                paperCounter.style.top = '0';
+                return;
+            }
+            
+            scrollThumb.style.display = 'block';
+            paperCounter.style.display = 'block';
+            
+            // Clear existing scroll listeners to prevent duplication
+            window.onscroll = null;
+            
+            window.onscroll = function() {
+                // Calculate which paper is most visible in the viewport
+                const windowHeight = window.innerHeight;
+                const scrollPosition = window.scrollY + (windowHeight / 2);
+                
+                let currentPaperIndex = 0;
+                let closestDistance = Infinity;
+                
+                visiblePapers.forEach((paper, index) => {
+                    const rect = paper.getBoundingClientRect();
+                    const paperMiddle = window.scrollY + rect.top + (rect.height / 2);
+                    const distance = Math.abs(paperMiddle - scrollPosition);
+                    
+                    if (distance < closestDistance) {
+                        closestDistance = distance;
+                        currentPaperIndex = index;
+                    }
+                });
+                
+                // Get scroll track height to calculate thumb position
+                const scrollTrack = document.querySelector('.scroll-track');
+                const trackHeight = scrollTrack.clientHeight;
+                const thumbHeight = scrollThumb.clientHeight;
+                
+                // Calculate progress through the visible papers (0 to 1)
+                // Handle edge case with only 1 visible paper
+                const progress = visiblePapers.length > 1 ? 
+                    currentPaperIndex / (visiblePapers.length - 1) : 0;
+                
+                // Update the thumb position, ensuring it doesn't go beyond track bounds
+                const maxTop = trackHeight - thumbHeight;
+                const newTop = Math.min(Math.max(0, progress * maxTop), maxTop);
+                scrollThumb.style.top = `${newTop}px`;
+                
+                // Update the counter position to be centered next to the thumb
+                // But ensure it stays within the visible area
+                const counterHeight = paperCounter.clientHeight;
+                const counterTop = newTop + (thumbHeight/2) - (counterHeight/2);
+                const adjustedCounterTop = Math.min(Math.max(0, counterTop), trackHeight - counterHeight);
+                paperCounter.style.top = `${adjustedCounterTop}px`;
+                
+                // Update the counter text
+                paperCounter.textContent = `${currentPaperIndex + 1}/${visiblePapers.length}`;
+            };
+            
+            // Trigger scroll handler once to set initial position
+            window.onscroll();
+        }
+        
+        // Initialize scroll indicator after content loads
+        window.addEventListener('load', function() {
+            setTimeout(updateScrollIndicator, 500); // Small delay to ensure papers are rendered
+        });
+
+        // Language toggle functionality
+        function updateLanguage(lang) {
+            currentLang = lang;
+            localStorage.setItem('lang', lang);
+            document.documentElement.lang = lang;
+            
+            // Update all i18n elements
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                element.textContent = translations[lang][key];
+            });
+            
+            // Update placeholders
+            document.querySelectorAll('[data-i18n-placeholder]').forEach(element => {
+                const key = element.getAttribute('data-i18n-placeholder');
+                element.placeholder = translations[lang][key];
+            });
+            
+            // Update document title
+            document.title = translations[lang].title;
+            
+            // Reload papers to update their display
+            const selectedDate = document.getElementById('dateSelect').value;
+            if (selectedDate) {
+                loadPapers(selectedDate);
+            }
+        }
+
+        // Language toggle button
+        document.getElementById('langToggle').addEventListener('click', () => {
+            const newLang = currentLang === 'zh-CN' ? 'en' : 'zh-CN';
+            updateLanguage(newLang);
+        });
     </script>
 </body>
 </html>
