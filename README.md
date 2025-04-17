@@ -49,10 +49,10 @@ The project is set up to run automatically via GitHub Actions. To customize:
    - `OPENAI_API_KEY`
    - `OPENAI_BASE_URL`
 3. Add the following variables:
-   - `CATEGORIES`: Comma-separated list of arXiv categories
-   - `KEYWORDS`: Optional comma-separated list of keywords to filter (add @ prefix for case_sensitive)
-   - `LANGUAGE`: Language for summaries (e.g., "Chinese" or "English")
-   - `MODEL_NAME`: AI model to use
+   - `CATEGORIES`: Comma-separated list of arXiv categories (e.g., `cs.CV,cs.CL,cs.AI`)
+   - `KEYWORDS`: Optional comma-separated list of keywords to filter (add @ prefix for case_sensitive) (e.g., `Agent,Agentic,@RAG`)
+   - `LANGUAGE`: Language for summaries (e.g., `Chinese` or `English`)
+   - `MODEL_NAME`: AI model to use (e.g., `deepseek-chat`)
    - `EMAIL`: Your email for git commits
    - `NAME`: Your name for git commits
 

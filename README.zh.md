@@ -49,10 +49,10 @@
    - `OPENAI_API_KEY`
    - `OPENAI_BASE_URL`
 3. 添加以下variables:
-   - `CATEGORIES`: 逗号分隔的arXiv类别列表
-   - `KEYWORDS`: 可选的逗号分隔的关键词列表（添加@前缀表示大小写敏感）
+   - `CATEGORIES`: 逗号分隔的arXiv类别列表（例如，`cs.CV,cs.CL,cs.AI`）
+   - `KEYWORDS`: 可选的逗号分隔的关键词列表（添加@前缀表示大小写敏感）（例如，`Agent,Agentic,@RAG`）
    - `LANGUAGE`: 摘要语言（例如，"Chinese"或"English"）
-   - `MODEL_NAME`: 使用的AI模型
+   - `MODEL_NAME`: 使用的AI模型（例如，`deepseek-chat`）
    - `EMAIL`: 用于git提交的邮箱
    - `NAME`: 用于git提交的名字
 
