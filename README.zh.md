@@ -1,9 +1,9 @@
 # 🔥 你的智能arXiv每日阅读器
-[English](./README.md)
-
 [![arXiv](https://img.shields.io/badge/arXiv-每日精选-red.svg)](https://arxiv.org/)
 [![AI驱动](https://img.shields.io/badge/AI%20驱动-DeepSeek-blue.svg)](https://deepseek.com/)
 [![部署](https://img.shields.io/badge/部署-GitHub%20Pages-green.svg)](https://pages.github.com/)
+
+[English](./README.md)
 
 📌 创建你的AI精选科研资讯流，重要论文不再错过！
 

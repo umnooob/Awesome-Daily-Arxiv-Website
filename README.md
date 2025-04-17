@@ -1,9 +1,9 @@
 # 🔥 Your Personalized Daily arXiv Reader 
-[中文版](./README.zh.md)
-
 [![arXiv](https://img.shields.io/badge/arXiv-Daily%20Digest-red.svg)](https://arxiv.org/)
 [![AI-Powered](https://img.shields.io/badge/AI%20Powered-DeepSeek-blue.svg)](https://deepseek.com/)
 [![Deploy](https://img.shields.io/badge/Deploy-GitHub%20Pages-green.svg)](https://pages.github.com/)
+
+[中文版](./README.zh.md)
 
 📌 Create your own AI-curated research feed! Never miss important papers again!
 
