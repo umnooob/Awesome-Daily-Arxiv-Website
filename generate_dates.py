@@ -2,10 +2,12 @@ import json
 import os
 from glob import glob
 
+language = os.environ.get("LANGUAGE", "Chinese")
+
 
 def generate_dates_json():
     # Get all JSONL files in the data directory
-    files = glob("data/*_AI_enhanced_Chinese.jsonl")
+    files = glob(f"data/*_AI_enhanced_{language}.jsonl")
 
     # Extract dates from filenames
     dates = [os.path.basename(f).split("_")[0] for f in files]
