@@ -2,10 +2,12 @@ import argparse
 import json
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Any, Dict
 
 import dotenv
 from openai import OpenAI
+from tqdm import tqdm
 
 if os.path.exists(".env"):
     dotenv.load_dotenv()
@@ -15,6 +17,12 @@ def parse_args():
     """解析命令行参数"""
     parser = argparse.ArgumentParser()
     parser.add_argument("--data", type=str, required=True, help="jsonline data file")
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=3,
+        help="number of worker threads",
+    )
     return parser.parse_args()
 
 
@@ -74,6 +82,27 @@ Please generate a summary of the paper in {language}.
         }
 
 
+def process_single_paper(
+    client: OpenAI, paper: Dict, language: str, output_file: str
+) -> None:
+    """Process a single paper and write results to file"""
+    try:
+        paper["AI"] = analyze_paper(client, paper["title"], paper["abstract"], language)
+    except Exception as e:
+        print(f"{paper['id']} has an error: {e}", file=sys.stderr)
+        paper["AI"] = {
+            "tldr": "Error",
+            "motivation": "Error",
+            "method": "Error",
+            "result": "Error",
+            "conclusion": "Error",
+        }
+
+    # Write results
+    with open(output_file, "a") as f:
+        f.write(json.dumps(paper, ensure_ascii=False) + "\n")
+
+
 def main():
     args = parse_args()
     language = os.environ.get("LANGUAGE", "Chinese")
@@ -98,27 +127,22 @@ def main():
     data = unique_data
     print("Open:", args.data, file=sys.stderr)
 
-    # Process each paper
-    for idx, d in enumerate(data):
-        try:
-            d["AI"] = analyze_paper(client, d["title"], d["abstract"], language)
-        except Exception as e:
-            print(f"{d['id']} has an error: {e}", file=sys.stderr)
-            d["AI"] = {
-                "tldr": "Error",
-                "motivation": "Error",
-                "method": "Error",
-                "result": "Error",
-                "conclusion": "Error",
-            }
+    output_file = args.data.replace(".jsonl", f"_AI_enhanced_{language}.jsonl")
 
-        # Write results
-        with open(
-            args.data.replace(".jsonl", f"_AI_enhanced_{language}.jsonl"), "a"
-        ) as f:
-            f.write(json.dumps(d, ensure_ascii=False) + "\n")
+    # Process papers concurrently
+    with ThreadPoolExecutor(max_workers=args.workers) as executor:
+        futures = []
+        for paper in data:
+            future = executor.submit(
+                process_single_paper, client, paper, language, output_file
+            )
+            futures.append(future)
 
-        print(f"Finished {idx+1}/{len(data)}", file=sys.stderr)
+        # Show progress bar
+        for _ in tqdm(
+            as_completed(futures), total=len(futures), desc="Processing papers"
+        ):
+            pass
 
 
 if __name__ == "__main__":

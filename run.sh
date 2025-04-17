@@ -7,14 +7,15 @@ export LANGUAGE=${LANGUAGE:-"Chinese"}
 export MODEL_NAME=${MODEL_NAME:-"deepseek-chat"}
 
 # Get current date
-today=`date -u "+%Y-%m-%d"`
+# today=`date -u "+%Y-%m-%d"`
+today="2025-04-16"
 # Create data directory if it doesn't exist
 mkdir -p data
 
 # Run the crawler
 echo "Running arXiv crawler..."
 cd daily_arxiv
-scrapy crawl arxiv -o ../data/${today}.jsonl
+scrapy crawl arxiv -O ../data/${today}.jsonl
 
 # Run AI enhancement
 echo "Running AI enhancement..."
