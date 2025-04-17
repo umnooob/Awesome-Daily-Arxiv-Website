@@ -7,8 +7,8 @@ export LANGUAGE=${LANGUAGE:-"Chinese"}
 export MODEL_NAME=${MODEL_NAME:-"deepseek-chat"}
 
 # Get current date
-# today=`date -u "+%Y-%m-%d"`
-today="2025-04-16"
+today=`date -u "+%Y-%m-%d"`
+
 # Create data directory if it doesn't exist
 mkdir -p data
 
