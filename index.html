@@ -572,7 +572,7 @@
                             
                             ${keywordsHtml}
                             
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 mb-0">
                                 <button class="toggle-summary" data-target="${summaryId}">
                                     <i class="fas fa-chevron-down"></i>
                                     <span>${translations[currentLang].details}</span>
@@ -580,7 +580,7 @@
                             </div>
                             
                             <div id="${summaryId}" class="summary-collapse">
-                                <div class="flex flex-col gap-4">
+                                <div class="flex flex-col gap-4 mb-2">
                                     ${paperIdHtml}
                                     
                                     <div class="flex flex-col">
@@ -599,7 +599,7 @@
                             </div>
 
                             ${paper.AI ? `
-                            <div class="ai-section rounded-lg mt-2">
+                            <div class="ai-section rounded-lg mt-0">
                                 <h3 class="text-lg font-semibold text-primary-600 dark:text-primary-400">
                                     <i class="fas fa-robot"></i>
                                     <span data-i18n="aiAnalysis">${translations[currentLang].aiAnalysis}</span>
