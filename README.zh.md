@@ -1,5 +1,8 @@
 # 基于AI增强的每日arXiv论文
 
+![webpage](./img/page_zh.png)
+
+
 本项目每日自动爬取arXiv论文并使用AI生成摘要。结果通过现代化的Web界面呈现，允许您按类别浏览和搜索论文。
 
 [English](./README.md)
@@ -22,7 +25,7 @@
 1. 克隆此仓库
 2. 安装依赖:
    ```bash
-   pip install -r requirements.txt
+   uv sync
    ```
 3. 设置环境变量:
    ```bash
@@ -31,11 +34,7 @@
    export LANGUAGE="Chinese"  # 摘要语言
    export MODEL_NAME="deepseek-chat"  # 使用的AI模型
    ```
-4. 运行爬虫:
-   ```bash
-   ./run.sh
-   ```
-5. 本地调试:
+4. 本地调试:
    ```bash
    ./run.sh --debug
    ```

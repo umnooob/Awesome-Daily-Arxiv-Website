@@ -1,5 +1,7 @@
 # Daily arXiv Papers with AI Enhancement
 
+![webpage](./img/page.png)
+
 This project automatically crawls arXiv papers daily and uses AI to generate summaries. The results are presented in a modern web interface that allows you to browse and search papers by category.
 
 [中文版](./README.zh.md)
@@ -22,7 +24,7 @@ Visit the GitHub Pages site to view the latest papers and summaries.
 1. Clone this repository
 2. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   uv sync
    ```
 3. Set up environment variables:
    ```bash
@@ -31,11 +33,7 @@ Visit the GitHub Pages site to view the latest papers and summaries.
    export LANGUAGE="Chinese"  # Language for summaries
    export MODEL_NAME="deepseek-chat"  # AI model to use
    ```
-4. Run the crawler:
-   ```bash
-   ./run.sh
-   ```
-5. For local debugging:
+4. For local debugging:
    ```bash
    ./run.sh --debug
    ```
